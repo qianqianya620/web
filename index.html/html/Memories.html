@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Happy Birthday</title>
+  <link rel="stylesheet" href="../css/jquery.fullPage.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    /* 添加点击提示 */
+    .click-hint {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 9999;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 14px;
+      animation: pulse 2s infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 0.7; }
+      50% { opacity: 1; }
+      100% { opacity: 0.7; }
+    }
+    
+    /* 点击区域 */
+    .click-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 100;
+      cursor: pointer;
+    }
+    
+    /* 最后一屏不需要点击区域 */
+    .section:last-child .click-area {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bgcolor">
+    <!-- 点击提示 -->
+    <div class="click-hint">点击屏幕继续</div>
+    
+    <div style="z-index:100;" id="dowebok">
+      <!--第一屏-->
+      <div class="section">
+        <div class="click-area" data-section="1"></div>
+        <div class="ly-box01">
+          <div class="ly-txt01">
+            <p class="ly-stxt01">✨且逢良辰，顺颂时宜。✨</p>
+            <p class="ly-stxt02">新的一岁，不必光芒万丈</p>
+            <p class="ly-stxt03">但愿始终温暖有光</p>
+            <p class="ly-stxt04">祝你热           烈灿烂</p>
+            <p class="ly-stxt05">永远都有精力奔向远方</p>
+          </div>
+          <div class="ly-txt02">
+            <p class="ly-stxt06">流星是宇宙写给地球的情书</p>
+            <p class="ly-stxt07">而你是世界赠予我的礼物</p>
+            <p class="ly-stxt08">多谢你如此精彩耀眼</p>
+            <p class="ly-stxt09">做我平淡岁月里的点点星辰</p>
+            <p class="ly-stxt10"> ε(○´∀｀)зε(´∀｀●)з‘牵手手’</p>
+          </div>
+        </div>
+      </div>
+
+      <!--第二屏-->
+      <div class="section">
+        <div class="click-area" data-section="2"></div>
+        <div class="timeline"></div>
+        <div class="timepoint11"></div>
+        <div class="ly-box11">
+          <div class="ly-txt11" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:100%;height:100%">
+          </div>
+          <div class="ly-txt12"></div>
+          <div class="ly-imgbox11" style="height:80%">
+            <img class="ly-img11" src="../img/2.png" style="height:100%">
+          </div>
+        </div>
+        <div class="ly-triangle11"></div>
+
+        <div class="ly-box12">
+          <div class="ly-txt13" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:100%;height:100%">
+          </div>
+          <div class="ly-txt14">
+            <p>亲爱的傻宝</p>
+            <p>祝你前路坦坦荡荡，万事皆可期(◦˙▽˙◦)</p>
+            <p>祝你天真烂漫，一直乐观拥抱美好生活！</p>
+            <p>祝你天天开心( ﹡ˆoˆ﹡ )</p>
+            <p>从早上起床开心到晚上进被窝</p>
+          </div>
+          <div class="ly-imgbox11" style="height:50%">
+            <img class="ly-img11" src="../img/9.png" style="height:100%">
+          </div>
+        </div>
+        <div class="ly-triangle12"></div>
+      </div>
+
+      <!--第三屏-->
+      <div class="section">
+        <div class="click-area" data-section="3"></div>
+        <div class="timeline"></div>
+        <div class="timepoint21"></div>
+        <div class="ly-box21">
+          <div class="ly-txt21" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:200%;height:100%">
+          </div>
+          <div class="ly-txt22" style="left:20%;font-size: 24px">
+            <p>哈基宝(。’▽’。)♡</p>
+            <p>爱你哦</p>
+          </div>
+          <div class="ly-imgbox21">
+            <img class="ly-img21" src="../img/3.png">
+          </div>
+        </div>
+        <div class="ly-triangle21"></div>
+
+        <div class="ly-box22">
+          <div class="ly-txt23" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:200%;height:100%">
+          </div>
+          <div class="ly-txt24">
+            <p>重要的事情说三遍生日快乐</p>
+            <p>生日快乐</p>
+            <p>生日快乐</p>
+            <p>嘻嘻♡♥(。´▽`。)♥♡</p>
+          </div>
+          <div class="ly-imgbox22">
+            <img class="ly-img22" src="../img/4.jpg">
+          </div>
+        </div>
+        <div class="ly-triangle22"></div>
+
+        <div class="ly-box23">
+          <div class="ly-txt25" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:100%;height:100%">
+          </div>
+          <div class="ly-txt26">
+            <p>我的🍔你要天天开心</p>
+            <p>永远保持微笑和快乐的心情</p>
+            <p>么么🍔</p>
+          </div>
+          <div class="ly-imgbox23" style="height: 70%">
+            <img class="ly-img23" src="../img/5.jpg" style="height: 100%">
+          </div>
+        </div>
+        <div class="ly-triangle23"></div>
+      </div>
+
+      <!--第四屏-->
+      <div class="section">
+        <div class="click-area" data-section="4"></div>
+        <div class="timeline"></div>
+        <div class="timepoint31"></div>
+        <div class="ly-box31">
+          <div class="ly-txt31" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:100%;height:100%">
+          </div>
+          <div class="ly-txt32">
+            <p>愿</p>
+            <p>贪吃不胖，深情不负，万事顺遂，</p>
+            <p>一直幸运。一生快乐，一生被爱，</p>
+            <p>想要的都拥有，得不到的都释怀。🌈</p>
+          </div>
+          <div class="ly-imgbox31" style="height:50%">
+            <img class="ly-img31" src="../img/6.jpg" style="height:100%">
+          </div>
+        </div>
+        <div class="ly-triangle31"></div>
+
+        <div class="ly-box32">
+          <div class="ly-txt33" style="width:100%;height:15%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:100%;height:100%">
+          </div>
+          <div class="ly-txt34">
+            <p>希望你一切都                                                                                                                                                                                                                                                                                                                                                                                                 好，希望所有俗套的祝福语，在你身上全部灵验！</p>
+          </div>
+          <div class="ly-imgbox31">
+            <img class="ly-img31" src="../img/7.jpg" style="height:100%">
+          </div>
+        </div>
+        <div class="ly-triangle32"></div>
+      </div>
+
+      <!--第五屏-->
+      <div class="section">
+        <div class="click-area" data-section="5"></div>
+        <div class="timeline"></div>
+        <div class="timepoint11"></div>
+        <div class="ly-box81">
+          <div class="ly-txt11" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:200%;height:200%">
+          </div>
+          <div class="ly-txt82" style="top:8%">
+            <p class="wwww1">哈喽，我的小朋友</p>
+            <p class="wwww1">新的一岁，不必万丈光芒</p>
+            <p class="wwww1">但愿始终温暖有光</p>
+            <p class="wwww1">深话浅说，长路慢走，</p>
+            <p class="wwww1">没有煽情的语录</p>
+            <p class="wwww1">希望你一切都好</p>
+            <p class="wwww1">希望所有俗套的祝福语</p>
+            <p class="wwww1">都在你身上灵验</p>
+          </div>
+          <div class="ly-imgbox81">
+            <img class="ly-img81" src="../img/8.png">
+          </div>
+        </div>
+        <div class="ly-triangle11"></div>
+
+        <div class="ly-box82">
+          <div class="ly-txt13" style="width:100%;height:10%;left:10%">
+            <img class="ly-img11" src="../img/HappyBirthday.png" style="width:100%;height:100%">
+          </div>
+          <div class="ly-txt84">
+            <p>🍔</p>
+            <p>祝你生日快乐！愿你是能披荆斩棘的大英雄，也能是被人疼爱的小朋友。祝你热烈灿烂，永远都有精力奔向远方；</p>
+            <p>祝你天真浪漫，一直乐观拥抱美好生活；</p>
+            <p>祝你温柔又不失坚强，祝你沉稳大方，成为更好的自己开心！”希望你前路浩浩荡荡，万事尽可期。</p>
+            <p>......</p>
+            <p>......</p>
+            <p><a href="./EasterEgg.html">点击有彩蛋</a></p>
+          </div>
+        </div>
+        <div class="ly-triangle82"></div>
+      </div>
+    </div>
+    
+    <!--试验-->
+    <ul class="bg-bubbles">
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ul>
+  </div>
+  
+  <audio src="../music/1.mp3" autoplay="autoplay" loop="loop"></audio>
+
+  <script src="../js/jquery-1.8.3.min.js"></script>
+  <script src="../js/jquery.fullPage.min.js"></script>
+  <script src="../js/diy.js"></script>
+  
+  <script>
+    $(document).ready(function() {
+      // 初始化fullPage，禁用滚轮和键盘
+      $('#dowebok').fullpage({
+        // 禁用滚轮滚动
+        scrollingSpeed: 1000,
+        scrollOverflow: false,
+        // 禁用键盘导航
+        keyboardScrolling: false,
+        // 禁用鼠标滚轮
+        continuousVertical: false,
+        
+        // 当离开某一屏时的回调
+        onLeave: function(index, nextIndex, direction) {
+          // 如果到达最后一屏，隐藏点击提示
+          if (nextIndex === $('.section').length) {
+            $('.click-hint').fadeOut();
+          } else {
+            $('.click-hint').fadeIn();
+          }
+        },
+        
+        // 页面加载完成后的回调
+        afterLoad: function(anchorLink, index) {
+          // 更新当前section的点击区域
+          $('.click-area').removeClass('active');
+          $('.click-area[data-section="' + index + '"]').addClass('active');
+        }
+      });
+      
+      // 为每个点击区域添加点击事件
+      $('.click-area').on('click', function() {
+        var currentSection = $(this).data('section');
+        // 使用fullPage的API切换到下一屏
+        $.fn.fullpage.moveSectionDown();
+      });
+      
+      // 页面加载后显示点击提示
+      setTimeout(function() {
+        $('.click-hint').fadeIn();
+      }, 1000);
+      
+      // 3秒后自动隐藏点击提示
+      setTimeout(function() {
+        $('.click-hint').fadeOut();
+      }, 3000);
+      
+      // 当鼠标移动时重新显示点击提示
+      $(document).on('mousemove', function() {
+        if ($('.click-hint').css('opacity') === '0') {
+          $('.click-hint').stop().fadeIn().delay(2000).fadeOut();
+        }
+      });
+    });
+  </script>
+</body>
+</html>

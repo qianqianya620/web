@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?c923daf3182a4b0ce01878475080aadc";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>
+
+<head>
+  <meta charset="UTF-8">
+  <title>生日快乐！</title>
+</head>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+  }
+
+  canvas {
+    position: absolute;
+  }
+</style>
+
+<body>
+  <canvas></canvas>
+  <canvas></canvas>
+  <canvas></canvas>
+  
+  <script>
+    // =========== 烟花声音模块开始（方案一）===========
+    class FireworkAudio {
+      constructor() {
+        this.audioContext = null;
+        this.sounds = [];
+        this.initialized = false;
+        this.init();
+      }
+      
+      init() {
+        // 等待用户交互
+        document.addEventListener('click', () => this.setupAudio(), { once: true });
+        document.addEventListener('touchstart', () => this.setupAudio(), { once: true });
+      }
+      
+      setupAudio() {
+        if (this.initialized) return;
+        
+        try {
+          this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          this.loadExternalSound();
+          this.initialized = true;
+        } catch (e) {
+          console.log("音频初始化失败:", e);
+        }
+      }
+      
+      loadExternalSound() {
+        // 使用免费的烟花爆炸音效（来自mixkit.co，公开许可）
+        const soundUrls = [
+          'https://assets.mixkit.co/sfx/preview/mixkit-firework-explosion-3095.mp3',
+          'https://assets.mixkit.co/sfx/preview/mixkit-firework-explosion-3096.mp3',
+          'https://assets.mixkit.co/sfx/preview/mixkit-firework-explosion-3097.mp3'
+        ];
+        
+        // 加载所有声音
+        let loadedCount = 0;
+        soundUrls.forEach(url => {
+          fetch(url)
+            .then(response => response.arrayBuffer())
+            .then(arrayBuffer => this.audioContext.decodeAudioData(arrayBuffer))
+            .then(audioBuffer => {
+              this.sounds.push(audioBuffer);
+              loadedCount++;
+              
+              // 如果都加载失败了，创建备用声音
+              if (loadedCount === soundUrls.length && this.sounds.length === 0) {
+                this.createBackupSound();
+              }
+            })
+            .catch(e => {
+              console.log("加载外部声音失败:", e);
+              loadedCount++;
+              
+              // 如果所有外部声音都加载失败，创建备用声音
+              if (loadedCount === soundUrls.length && this.sounds.length === 0) {
+                this.createBackupSound();
+              }
+            });
+        });
+      }
+      
+      createBackupSound() {
+        // 如果外部声音加载失败，创建一个更好的合成声音
+        if (!this.audioContext) return;
+        
+        const duration = 1.2;
+        const sampleRate = this.audioContext.sampleRate;
+        const frameCount = duration * sampleRate;
+        const buffer = this.audioContext.createBuffer(2, frameCount, sampleRate);
+        
+        // 生成左右声道
+        for (let channel = 0; channel < 2; channel++) {
+          const channelData = buffer.getChannelData(channel);
+          
+          // 创建更真实的爆炸声
+          let noisePhase = 0;
+          let boomPhase = 0;
+          let cracklePhase = 0;
+          
+          for (let i = 0; i < frameCount; i++) {
+            const t = i / sampleRate;
+            
+            // 1. 主低频爆炸声（隆隆声）
+            const boomFreq = 60 + Math.exp(-t * 10) * 40;
+            boomPhase += boomFreq * 2 * Math.PI / sampleRate;
+            const boom = Math.sin(boomPhase) * Math.exp(-t * 8);
+            
+            // 2. 中频爆炸声
+            const midFreq = 200 + Math.exp(-t * 15) * 100;
+            const mid = Math.sin(midFreq * t * 2 * Math.PI) * Math.exp(-t * 12);
+            
+            // 3. 高频火花声（使用噪音）
+            const noise = Math.random() * 2 - 1;
+            const noiseEnv = Math.exp(-t * 20);
+            
+            // 4. 噼啪声（随机短脉冲）
+            let crackle = 0;
+            if (Math.random() < 0.3 * Math.exp(-t * 15)) {
+              crackle = (Math.random() * 2 - 1) * Math.exp(-t * 50);
+            }
+            
+            // 组合所有声音成分
+            channelData[i] = (
+              boom * 0.4 + 
+              mid * 0.3 + 
+              noise * noiseEnv * 0.2 + 
+              crackle * 0.1
+            ) * 1.2;
+            
+            // 添加轻微的左右声道差异
+            if (channel === 1) {
+              channelData[i] *= 0.9; // 右声道稍小声
+            }
+          }
+        }
+        
+        this.sounds.push(buffer);
+      }
+      
+      play() {
+        if (!this.initialized || !this.audioContext || this.sounds.length === 0) return;
+        
+        const source = this.audioContext.createBufferSource();
+        
+        // 随机选择一个声音
+        const soundIndex = Math.floor(Math.random() * this.sounds.length);
+        source.buffer = this.sounds[soundIndex];
+        
+        // 创建音频节点链
+        const gainNode = this.audioContext.createGain();
+        
+        // 随机音量变化 (15%-30%)
+        gainNode.gain.value = 0.15 + Math.random() * 0.15;
+        
+        // 添加简单的混响效果
+        try {
+          const convolver = this.audioContext.createConvolver();
+          // 创建简单的脉冲响应模拟小空间混响
+          const reverbLength = 0.5 * this.audioContext.sampleRate;
+          const impulseBuffer = this.audioContext.createBuffer(2, reverbLength, this.audioContext.sampleRate);
+          
+          for (let channel = 0; channel < 2; channel++) {
+            const impulseData = impulseBuffer.getChannelData(channel);
+            for (let i = 0; i < reverbLength; i++) {
+              impulseData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (0.1 * this.audioContext.sampleRate));
+            }
+          }
+          
+          convolver.buffer = impulseBuffer;
+          source.connect(convolver);
+          convolver.connect(gainNode);
+        } catch (e) {
+          // 如果混响失败，直接连接
+          source.connect(gainNode);
+        }
+        
+        gainNode.connect(this.audioContext.destination);
+        
+        // 轻微的音高变化 (±10%)
+        source.detune.value = Math.random() * 200 - 100;
+        
+        // 播放
+        source.start();
+      }
+    }
+    
+    // 初始化音频
+    const fireworkAudio = new FireworkAudio();
+    // =========== 烟花声音模块结束 ===========
+    
+    function GetRequest() {
+      var url = decodeURI(location.search); //获取url中"?"符后的字串
+      var theRequest = new Object();
+      if (url.indexOf("?") != -1) {
+        var str = url.substr(1);
+        strs = str.split("&");
+        for (var i = 0; i < strs.length; i++) {
+          theRequest[strs[i].split("=")[0]] = unescape(strs[i].split("=")[1]);
+        }
+      }
+      return theRequest;
+    }
+    
+    class Shard {
+      constructor(x, y, hue) {
+        this.x = x;
+        this.y = y;
+        this.hue = hue;
+        this.lightness = 50;
+        this.size = 15 + Math.random() * 10;
+        const angle = Math.random() * 2 * Math.PI;
+        const blastSpeed = 1 + Math.random() * 6;
+        this.xSpeed = Math.cos(angle) * blastSpeed;
+        this.ySpeed = Math.sin(angle) * blastSpeed;
+        this.target = getTarget();
+        this.ttl = 100;
+        this.timer = 0;
+      }
+      draw() {
+        ctx2.fillStyle = `hsl(${this.hue}, 100%, ${this.lightness}%)`;
+        ctx2.beginPath();
+        ctx2.arc(this.x, this.y, this.size, 0, 2 * Math.PI);
+        ctx2.closePath();
+        ctx2.fill();
+      }
+      update() {
+        if (this.target) {
+          const dx = this.target.x - this.x;
+          const dy = this.target.y - this.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const a = Math.atan2(dy, dx);
+          const tx = Math.cos(a) * 5;
+          const ty = Math.sin(a) * 5;
+          this.size = lerp(this.size, 1.5, 0.05);
+
+          if (dist < 5) {
+            this.lightness = lerp(this.lightness, 100, 0.01);
+            this.xSpeed = this.ySpeed = 0;
+            this.x = lerp(this.x, this.target.x + fidelity / 2, 0.05);
+            this.y = lerp(this.y, this.target.y + fidelity / 2, 0.05);
+            this.timer += 1;
+          } else
+            if (dist < 10) {
+              this.lightness = lerp(this.lightness, 100, 0.01);
+              this.xSpeed = lerp(this.xSpeed, tx, 0.1);
+              this.ySpeed = lerp(this.ySpeed, ty, 0.1);
+              this.timer += 1;
+            } else {
+              this.xSpeed = lerp(this.xSpeed, tx, 0.02);
+              this.ySpeed = lerp(this.ySpeed, ty, 0.02);
+            }
+        } else {
+          this.ySpeed += 0.05;
+          //this.xSpeed = lerp(this.xSpeed, 0, 0.1);
+          this.size = lerp(this.size, 1, 0.05);
+
+          if (this.y > c2.height) {
+            shards.forEach((shard, idx) => {
+              if (shard === this) {
+                shards.splice(idx, 1);
+              }
+            });
+          }
+        }
+        this.x = this.x + this.xSpeed;
+        this.y = this.y + this.ySpeed;
+      }
+    }
+
+
+    class Rocket {
+      constructor() {
+        const quarterW = c2.width / 4;
+        this.x = quarterW + Math.random() * (c2.width - quarterW);
+        this.y = c2.height - 15;
+        this.angle = Math.random() * Math.PI / 4 - Math.PI / 6;
+        this.blastSpeed = 6 + Math.random() * 7;
+        this.shardCount = 15 + Math.floor(Math.random() * 15);
+        this.xSpeed = Math.sin(this.angle) * this.blastSpeed;
+        this.ySpeed = -Math.cos(this.angle) * this.blastSpeed;
+        this.hue = Math.floor(Math.random() * 360);
+        this.trail = [];
+      }
+      draw() {
+        ctx2.save();
+        ctx2.translate(this.x, this.y);
+        ctx2.rotate(Math.atan2(this.ySpeed, this.xSpeed) + Math.PI / 2);
+        ctx2.fillStyle = `hsl(${this.hue}, 100%, 50%)`;
+        ctx2.fillRect(0, 0, 5, 15);
+        ctx2.restore();
+      }
+      update() {
+        this.x = this.x + this.xSpeed;
+        this.y = this.y + this.ySpeed;
+        this.ySpeed += 0.1;
+      }
+
+      explode() {
+        for (let i = 0; i < 70; i++) {
+          shards.push(new Shard(this.x, this.y, this.hue));
+        }
+        
+        // =========== 播放烟花声音 ===========
+        fireworkAudio.play();
+      }
+    }
+
+    console.log(GetRequest('val').val)
+    // INITIALIZATION
+    const [c1, c2, c3] = document.querySelectorAll('canvas');
+    const [ctx1, ctx2, ctx3] = [c1, c2, c3].map(c => c.getContext('2d'));
+    let fontSize = 200;
+    const rockets = [];
+    const shards = [];
+    const targets = [];
+    const fidelity = 3;
+    let counter = 0;
+    c2.width = c3.width = window.innerWidth;
+    c2.height = c3.height = window.innerHeight;
+    ctx1.fillStyle = '#000';
+    const text = '🍔,生日快乐呀！'
+    let textWidth = 99999999;
+
+    while (textWidth > window.innerWidth) {
+      ctx1.font = `900 ${fontSize--}px Arial`;
+      textWidth = ctx1.measureText(text).width;
+    }
+
+    c1.width = textWidth;
+    c1.height = fontSize * 1.5;
+    ctx1.font = `900 ${fontSize}px Arial`;
+    ctx1.fillText(text, 0, fontSize);
+    const imgData = ctx1.getImageData(0, 0, c1.width, c1.height);
+    for (let i = 0, max = imgData.data.length; i < max; i += 4) {
+      const alpha = imgData.data[i + 3];
+      const x = Math.floor(i / 4) % imgData.width;
+      const y = Math.floor(i / 4 / imgData.width);
+
+      if (alpha && x % fidelity === 0 && y % fidelity === 0) {
+        targets.push({ x, y });
+      }
+    }
+
+    // =========== 修改这里：将文字颜色改为粉红色 ===========
+    // 原代码：ctx3.fillStyle = '#FFF';
+    // 原代码：ctx3.shadowColor = '#FFF';
+    ctx3.fillStyle = '#FF69B4';  // 粉红色，可以用 #FFC0CB 更淡的粉色或 #FF1493 更深的粉色
+    ctx3.shadowColor = '#FF69B4'; // 阴影也使用粉红色
+    ctx3.shadowBlur = 25;
+
+    // ANIMATION LOOP
+    (function loop() {
+      ctx2.fillStyle = "rgba(0, 0, 0, .1)";
+      ctx2.fillRect(0, 0, c2.width, c2.height);
+      //ctx2.clearRect(0, 0, c2.width, c2.height);
+      counter += 1;
+
+      if (counter % 15 === 0) {
+        rockets.push(new Rocket());
+      }
+      rockets.forEach((r, i) => {
+        r.draw();
+        r.update();
+        if (r.ySpeed > 0) {
+          r.explode();
+          rockets.splice(i, 1);
+        }
+      });
+
+      shards.forEach((s, i) => {
+        s.draw();
+        s.update();
+
+        if (s.timer >= s.ttl || s.lightness >= 99) {
+          ctx3.fillRect(s.target.x, s.target.y, fidelity + 1, fidelity + 1);
+          shards.splice(i, 1);
+        }
+      });
+
+      requestAnimationFrame(loop);
+    })();
+
+    // HELPER FUNCTIONS
+    const lerp = (a, b, t) => Math.abs(b - a) > 0.1 ? a + t * (b - a) : b;
+
+    function getTarget() {
+      if (targets.length > 0) {
+        const idx = Math.floor(Math.random() * targets.length);
+        let { x, y } = targets[idx];
+        targets.splice(idx, 1);
+
+        x += c2.width / 2 - textWidth / 2;
+        y += c2.height / 2 - fontSize / 2;
+
+        return { x, y };
+      }
+    }
+  </script>
+</body>
+</html>
